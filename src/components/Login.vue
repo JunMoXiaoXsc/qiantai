@@ -51,6 +51,7 @@ export default {
         }
       })
     },
+    //跳转到注册页面
     ZCFuser: function () {
       this.$router.push('/Register')
     },

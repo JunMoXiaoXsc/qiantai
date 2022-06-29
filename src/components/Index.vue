@@ -138,7 +138,9 @@ export default {
       tid: 0
     }
   },
+  //页面加载事件
   mounted: function () {
+    //获取登录的用户
     this.currUser = JSON.parse(sessionStorage.getItem("user"));
     if (JSON.parse(sessionStorage.getItem("user")) == null) {
       this.currUser = {}
@@ -160,7 +162,7 @@ export default {
     }
   },
   methods: {
-    // 加载数据load
+    // 加载商品数据数据load
     loadData: function () {
       this.$http.post("pro/listData", {
         keyword: this.keyword,
@@ -197,7 +199,6 @@ export default {
     closeLogin: function () {
       this.seen = false
     },
-
     //退出登录
     logout: function () {
       this.$http.post('/logout').then((res) => {
@@ -208,6 +209,7 @@ export default {
             message: '退出成功!'
           });
           sessionStorage.clear();
+          this.currUser = {}
         } else {
 
         }

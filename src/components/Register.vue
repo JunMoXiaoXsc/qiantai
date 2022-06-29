@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- 用户登录 -->
+    <!-- 用户注册 -->
     <el-card class="box-card" id="TanChuCeng">
       <div slot="header" class="clearfix">
         <span>用户注册</span>
@@ -24,19 +24,19 @@
 
 <script>
 export default {
-  name: 'Login',
+  name: 'Register',
   data() {
     return {
-      //用户登陆数据
+      //用户注册数据
       form: {
       },
     }
   },
   methods: {
+    //注册
     trueRegister: function () {
       this.$http.post('fu/addFuser', this.form).then((res) => {
         console.log("🚀 注册后返回的数据", res)
-
         if (res.data.success) {
           this.$message({
             type: 'success',
