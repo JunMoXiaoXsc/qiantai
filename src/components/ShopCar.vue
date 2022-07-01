@@ -22,11 +22,6 @@
           {{ scope.row.num * scope.row.price }}
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="120">
-        <template slot-scope="scope">
-          {{ scope.row.num * scope.row.price }}
-        </template>
-      </el-table-column>
     </el-table>
     <div style="margin-top: 20px">
       <div style="float: left; height: 30px; padding-left: 5px;">
@@ -34,7 +29,15 @@
       </div>
     </div>
     <div style="margin-top: 20px">
+      <!-- 选择地址 -->
+      <el-select v-model="value" placeholder="请选择" style="width: 100%">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+      </el-select>
+    </div>
+    <div style="margin-top: 20px">
       <el-button type="primary" @click="trueBuy()">确认购买</el-button>
+      <el-button type="info" @click="removeShopCar()">移除购物车</el-button>
       <el-button type="danger" @click="cleanShopCar()">清空购物车</el-button>
     </div>
   </div>
@@ -45,6 +48,23 @@ export default {
   name: "ShopCar",
   data() {
     return {
+      options: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
+      value: '',
       //购物车数据
       tableData: [],
       //选中的商品
@@ -96,6 +116,27 @@ export default {
     //确认购买
     trueBuy: function () {
       console.log("🚀 购物车数据", this.multipleSelection)
+      console.log("🚀 购物车数据", this.value)
+      let orderStr = ''
+      this.multipleSelection.forEach((res) => {
+        orderStr += res.fuser.fuid + ',' + this.zongji + ',' + res.product.pid + ',' + res.num + ',' + res.price + "," + this.value
+        orderStr += "/"
+      })
+      console.log("🚀 确认购买拼好的数据", orderStr)
+      this.$http.post("fu/saveorders", { orderStr: orderStr }).then((res) => {
+        if (res.data.success) {
+          this.removeShopCar();
+          this.$message({
+            type: "success",
+            message: '购买成功请前往我的订单查看'
+          })
+        } else {
+          this.$message({
+            type: "error",
+            message: res.data.error
+          })
+        }
+      })
     },
     //清空购物车
     cleanShopCar: function () {
@@ -106,6 +147,7 @@ export default {
             type: 'success',
             message: '清空成功'
           })
+          this.$emit("fatherCount")
           this.shopCarInfo()
         } else {
           this.$message({
@@ -115,6 +157,21 @@ export default {
         }
       })
     },
+    //移除购物车
+    removeShopCar: function () {
+      let removeStr = ''
+      this.multipleSelection.forEach((item) => {
+        removeStr += item.product.pid + ','
+      })
+      this.$http.post("fu/removeShopCar", { str: removeStr }).then((res) => {
+        if (res.data.success) {
+          this.shopCarInfo()
+          //购物车内的数量
+          this.$emit("fatherCount")
+        }
+      })
+
+    }
   }
 }
 </script>

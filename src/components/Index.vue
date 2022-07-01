@@ -7,7 +7,7 @@
         <!-- 个人信息部分 -->
         <span style="float: right;margin-top: 10px;">
           <div>
-            <el-badge :value="12" class="item">
+            <el-badge :value="count" class="item">
               <span style="color:blue;">
                 {{ this.currUser.username }}
               </span>
@@ -15,35 +15,44 @@
                 <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item>
-                    <el-button style="width:100%;height:30px;" @click="toIndex()">首页
+                    <el-button style="width:100%;height:30px;" @click="toIndex()">
+                      <i class="el-icon-s-home"></i>首页
                     </el-button>
                   </el-dropdown-item>
-                  <el-dropdown-item>
-                    <el-button style="width:100%;height:30px;" @click="showLogin()">登录
+                  <el-dropdown-item v-if="seenLogin">
+                    <el-button style="width:100%;height:30px;" @click="showLogin()">
+                      <i class="el-icon-success"></i>登录
                     </el-button>
                   </el-dropdown-item>
-                  <el-dropdown-item>
-                    <el-button style="width:100%;height:30px;" @click="logout()">退出登录
-                    </el-button>
-                  </el-dropdown-item>
-                  <el-dropdown-item>
-                    <el-badge :value="12" class="item">
-                      <el-button style="width:100%;height:100%;" @click="myShopCar()">我的购物车</el-button>
+                  <el-dropdown-item v-if="seenShopCar">
+                    <el-badge :value="count" class="item">
+                      <el-button style="width:200px;height: 30px;" @click="myShopCar()">
+                        <i class="el-icon-shopping-cart-full"></i>购物车
+                      </el-button>
                     </el-badge>
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="seenMyInfo">
+                    <el-button style="width:100%;height:30px;" @click="myInfo()">
+                      <i class="el-icon-user-solid"></i>个人信息
+                    </el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item v-if="seenLogout">
+                    <el-button style="width:100%;height:30px;" @click="logout()">
+                      <i class="el-icon-error"></i>退出登录
+                    </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-badge>
-
           </div>
-
         </span>
 
         <!-- 头部结束 -->
       </el-header>
       <!-- 内容 -->
       <el-main v-loading.fullscreen.lock="fullscreenLoading">
-        <router-view></router-view>
+        <!-- 路由出口 -->
+        <router-view @fatherCount="fatherCount"></router-view>
       </el-main>
       <!-- 内容结束 -->
       <!-- 下面 -->
@@ -58,6 +67,11 @@ export default {
   name: "Index",
   data() {
     return {
+      seenLogin: true,
+      seenLogout: false,
+      seenMyInfo: false,
+      seenShopCar: false,
+      count: '',
       //加载
       fullscreenLoading: false,
       //yonghu duixiang
@@ -77,9 +91,30 @@ export default {
     this.currUser = JSON.parse(sessionStorage.getItem("user"));
     if (JSON.parse(sessionStorage.getItem("user")) == null) {
       this.currUser = {}
+      this.seenLogin = true
+      this.seenLogout = false
+      this.seenMyInfo = false
+      this.seenShopCar = false
+
+    } else {
+      //购物车条数
+      this.shopCarCount()
+      this.seenLogin = false
+      this.seenLogout = true
+      this.seenMyInfo = true
+      this.seenShopCar = true
+
     }
   },
   methods: {
+    //购物车条数
+    shopCarCount: function () {
+      this.$http.post('fu/shopCarCount').then((res) => {
+        this.count = res.data;
+        console.log("🚀购物车数量", res.data)
+        this.$emit("fatherCount")
+      })
+    },
     //显示用户登录页面
     showLogin: function () {
       this.$router.push('/toLogin');
@@ -99,6 +134,11 @@ export default {
           });
           sessionStorage.clear();
           this.currUser = {}
+          this.count = ''
+          this.seenLogout = false;
+          this.seenLogin = true;
+          this.seenMyInfo = false
+          this.seenShopCar = false
           this.$router.push("/")
         } else {
         }
@@ -112,6 +152,15 @@ export default {
     toIndex() {
       this.$router.push("/")
     },
+    //跳到个人信息
+    myInfo() {
+      this.$router.push("/MyInfo")
+    },
+    //子组件访问父组件
+    fatherCount: function () {
+      //查询用户购物车的商品数量
+      this.shopCarCount()
+    }
   }
 }
 </script>

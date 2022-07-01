@@ -46,6 +46,7 @@ export default {
       total: 0,
       //当前页
       currentPage: 1,
+      //根据类别查询
       tid: 0,
     }
   },
@@ -84,6 +85,7 @@ export default {
         }, 500)
       });
     },
+
     //商品图片
     Image: function (imgpath) {
       return this.$imgServer + imgpath;
@@ -109,6 +111,7 @@ export default {
           this.$message({
             message: '添加成功'
           })
+          this.$emit("fatherCount")
         }
       })
     },

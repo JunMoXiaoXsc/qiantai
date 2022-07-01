@@ -5,6 +5,8 @@ import Login from '@/components/Login'
 import Register from '@/components/Register'
 import Main from '@/components/Main'
 import ShopCar from '@/components/ShopCar'
+import MyInfo from '@/components/MyInfo'
+import MyOrders from '@/components/MyOrders'
 
 
 Vue.use(Router)
@@ -25,6 +27,16 @@ export default new Router({
           path: '/ShopCar',
           name: 'ShopCar',
           component: ShopCar
+        },
+        {
+          path: '/MyInfo',
+          name: 'MyInfo',
+          component: MyInfo,
+          children:[{
+          path: '/MyOrders',
+          name: 'MyOrders',
+          component: MyOrders
+          }]
         },
       ]
     },
