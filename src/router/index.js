@@ -7,6 +7,7 @@ import Main from '@/components/Main'
 import ShopCar from '@/components/ShopCar'
 import MyInfo from '@/components/MyInfo'
 import MyOrders from '@/components/MyOrders'
+import PaySuccess from '@/components/PaySuccess'
 
 
 Vue.use(Router)
@@ -48,6 +49,11 @@ export default new Router({
       path: '/Register',
       name: 'Register',
       component: Register
+    },
+     {
+      path: '/PaySuccess',
+      name: 'PaySuccess',
+      component: PaySuccess
     }
   ]
 })
